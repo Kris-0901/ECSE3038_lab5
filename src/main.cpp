@@ -1,4 +1,5 @@
 #include <Arduino.h>
+//#include <string.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
@@ -10,8 +11,12 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); // setup for OLED display
 
 uint16_t messageIcon = 0x00EC; /*messageIcon (u8g2_font_streamline_all_t)*/
 
-String app_get(const char* _ENDPOINT,const char* API_KEY);
-void splashScreen(); //OLED default startup screen function prototype
+//function prototypes
+void splashScreen(); //OLED default startup screen 
+String appGet(const char* _ENDPOINT,const char* API_KEY);//get request body as char*
+const char* parseJSON (String _message, const char* _key); //convert request body to JSON.Parse selected line then return message 
+void printMessage(const char* _OLEDMessage); //print message to oled
+
 
 void setup(){
 
@@ -19,7 +24,7 @@ void setup(){
 
   u8g2.begin();  // Initialize the display
   u8g2.clear();  // clear the display
-  splashScreen();//OLED default startup screen 
+  //splashScreen();//OLED default startup screen 
 
   if (IS_WOKWI) 
     WiFi.begin(SSID, PASS, CHANNEL);
@@ -47,14 +52,16 @@ void setup(){
 
 void loop(){
 
-  if ( WiFi.status() == WL_CONNECTED) 
-  {// check if connected to Wifi
-    String response_body = app_get(ENDPOINT,API_KEY); //get request body as string 
+  if ( WiFi.status() == WL_CONNECTED) // check if connected to Wifi
+  {
+    String response_body = appGet(ENDPOINT,API_KEY); //get request body as string 
+    const char* message = parseJSON(response_body,"line_1");//convert request body to JSON.Parse line 1 then return message
+    printMessage(message);
   }
 
 }
 
-String app_get(const char* _ENDPOINT,const char* _API_KEY="")
+String appGet(const char* _ENDPOINT,const char* _API_KEY="")
 {
   HTTPClient https; // declare http object
 
@@ -64,7 +71,7 @@ String app_get(const char* _ENDPOINT,const char* _API_KEY="")
   int _responseCode=https.GET();// get the RestAPI status code
 
   if (_responseCode<=0){// check for errors 
-    String _ERROR = "ERROR";
+    const char* _ERROR = "ERROR";
     Serial.print("An error occured with repsonse code:");
     Serial.println(_responseCode);
     https.end();
@@ -79,6 +86,36 @@ String app_get(const char* _ENDPOINT,const char* _API_KEY="")
   https.end();// end the https connection 
 
   return _response_body;
+}
+
+const char* parseJSON (String _message, const char* _key)  //convert request body to JSON.Parse the specified key then return message as char*
+{ 
+  JsonDocument object; // initialize JSOn object 
+  DeserializationError error = deserializeJson(object, _message); // check for json conversion error 
+
+  if (error) // return errror if conversion fails 
+  {
+    const char* _ERROR = "ERROR";
+    Serial.print("Deserialization failed: ");
+    Serial.println(error.c_str());
+    return _ERROR;
+  }
+
+  const char* _charMessage = object[_key];
+
+  return _charMessage; 
+}
+
+void printMessage(const char* _OLEDMessage)
+{
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_t0_13b_me);// set font
+    int _charWidth = u8g2.getStrWidth("[user]:"); // get width of string header
+    u8g2.drawStr(0, 13, "[user]:");
+    u8g2.drawStr(_charWidth+2, 13, _OLEDMessage); // print message to oled in specified position 
+  } while ( u8g2.nextPage() );
+  return;
 }
 
 void splashScreen()//OLED default startup screen
@@ -98,5 +135,5 @@ void splashScreen()//OLED default startup screen
     u8g2.drawStr(_centerStart, 60, _title); 
 
   } while ( u8g2.nextPage() );
-
+  return;
 }
