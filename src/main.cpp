@@ -153,7 +153,7 @@ void printMessage(const char* _OLEDMessage1, const char* _OLEDMessage2)
 
 void splashScreen()//OLED default startup screen
 {
-  const char* _title = "Nokia";
+  const char* _title = "Noki0";
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_streamline_all_t);// set font 
