@@ -122,6 +122,7 @@ void printMessage(const char* _OLEDMessage)
     int _titleWidth = u8g2.getStrWidth(_title); // get width of string
     int _centerStart = _pos1 + (_avaWidth - _titleWidth) / 2; //print text in ceter of screen based on the width of text 
     u8g2.drawStr(_centerStart, 13, _title); 
+    u8g2.drawLine(0, 14, 128, 14);// line to separate title from messages
 
 
 
