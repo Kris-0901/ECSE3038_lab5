@@ -35,11 +35,10 @@ This code was written to fulfill the course requirements of **'ECSE3038 Engineer
 
 ---
 
-![Alt Text]([https://drive.google.com/uc?id=FILE_ID](https://drive.google.com/file/d/1k6sUmjPjp53ZI-dod_arUMYpZ0DF2v3o/view?usp=sharing))
-
-
 ## Riddle
 
 **"What is always on time but never arrives?"**
 
 ---
+
+![Circuit](https://drive.google.com/uc?id=FILE_ID](https://drive.google.com/file/d/1k6sUmjPjp53ZI-dod_arUMYpZ0DF2v3o/view?usp=sharing)
