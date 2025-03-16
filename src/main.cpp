@@ -10,9 +10,11 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); // setup for OLED display
 
 uint16_t messageIcon = 0x00EC; /*messageIcon (u8g2_font_streamline_all_t)*/
+uint16_t wifiIcon = 0x01FD; /*wifiIcon (u8g2_font_streamline_all_t)*/
 
 //function prototypes
-void splashScreen(); //OLED default startup screen 
+void splashScreen(); //OLED default startup screen
+void wifiSuccessScreen(); // indicate when connected to wifi
 String appGet(const char* _ENDPOINT,const char* API_KEY);//get request body as char*
 const char* parseJSON (String _message, const char* _key); //convert request body to JSON.Parse selected line then return message 
 void printMessage(const char* _OLEDMessage); //print message to oled
@@ -24,7 +26,7 @@ void setup(){
 
   u8g2.begin();  // Initialize the display
   u8g2.clear();  // clear the display
-  //splashScreen();//OLED default startup screen 
+  splashScreen();//OLED default startup screen 
 
   if (IS_WOKWI) 
     WiFi.begin(SSID, PASS, CHANNEL);
@@ -43,6 +45,8 @@ void setup(){
     digitalWrite(BUILTIN_LED, HIGH);
     delay(1500);
     digitalWrite(BUILTIN_LED, LOW);
+    wifiSuccessScreen();
+    delay(1000);
   }
 
   Serial.print("Conected to the WiFi Network with IP address: ");
@@ -108,12 +112,23 @@ const char* parseJSON (String _message, const char* _key)  //convert request bod
 
 void printMessage(const char* _OLEDMessage)
 {
+  const char* _title = "Messages"; ///screen title
   u8g2.firstPage();
   do {
-    u8g2.setFont(u8g2_font_t0_13b_me);// set font
-    int _charWidth = u8g2.getStrWidth("[user]:"); // get width of string header
-    u8g2.drawStr(0, 13, "[user]:");
-    u8g2.drawStr(_charWidth+2, 13, _OLEDMessage); // print message to oled in specified position 
+    int _pos1 = 0;
+    int _pos2 = 128;
+    int _avaWidth = _pos2 - _pos1;
+    u8g2.setFont(u8g2_font_6x13O_mf);// set font
+    int _titleWidth = u8g2.getStrWidth(_title); // get width of string
+    int _centerStart = _pos1 + (_avaWidth - _titleWidth) / 2; //print text in ceter of screen based on the width of text 
+    u8g2.drawStr(_centerStart, 13, _title); 
+
+
+
+    u8g2.setFont(u8g2_font_6x13O_mf);// set font
+    int _charWidth = u8g2.getStrWidth("[msg]"); // get width of string header
+    u8g2.drawStr(0, 30, "[msg]");
+    u8g2.drawStr(_charWidth+2, 30, _OLEDMessage); // print message to oled in specified position 
   } while ( u8g2.nextPage() );
   return;
 }
@@ -130,6 +145,26 @@ void splashScreen()//OLED default startup screen
     int _pos2 = 128;
     int _avaWidth = _pos2 - _pos1;
     u8g2.setFont(u8g2_font_luBIS14_te);// set font
+    int _charWidth = u8g2.getStrWidth(_title); // get width of string
+    int _centerStart = _pos1 + (_avaWidth - _charWidth) / 2; //print text in ceter of screen based on the width of text 
+    u8g2.drawStr(_centerStart, 60, _title); 
+
+  } while ( u8g2.nextPage() );
+  return;
+}
+
+void wifiSuccessScreen()//OLED default startup screen
+{
+  const char* _title = "Wifi Connected";
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_streamline_all_t);// set font 
+    u8g2.drawGlyph(53, 42, wifiIcon);// display an icon 21x21 pixels in center of screen 
+
+    int _pos1 = 0;
+    int _pos2 = 128;
+    int _avaWidth = _pos2 - _pos1;
+    u8g2.setFont(u8g2_font_t0_13b_me);// set font
     int _charWidth = u8g2.getStrWidth(_title); // get width of string
     int _centerStart = _pos1 + (_avaWidth - _charWidth) / 2; //print text in ceter of screen based on the width of text 
     u8g2.drawStr(_centerStart, 60, _title); 
