@@ -41,4 +41,4 @@ This code was written to fulfill the course requirements of **'ECSE3038 Engineer
 
 ---
 
-![Circuit](https://drive.google.com/uc?id=FILE_ID](https://drive.google.com/file/d/1k6sUmjPjp53ZI-dod_arUMYpZ0DF2v3o/view?usp=sharing)
+![Circuit](https://i.imgur.com/YOi6eLU.jpeg)
