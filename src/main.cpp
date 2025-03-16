@@ -11,10 +11,10 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); // setup for OLED display
 
 uint16_t messageIcon = 0x00EC; /*messageIcon (u8g2_font_streamline_all_t)*/
 uint16_t wifiIcon = 0x01FD; /*wifiIcon (u8g2_font_streamline_all_t)*/
-const char* message1;
-const char* message2;
-const char* previousMessage;
-String previousResponseBody;
+const char* message1="";
+const char* message2="";
+const char* previousMessage="";
+String previousResponseBody="";
 
 //function prototypes
 void splashScreen(); //OLED default startup screen
