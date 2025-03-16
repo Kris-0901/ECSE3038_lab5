@@ -69,7 +69,7 @@ void loop(){
 
 }
 
-String appGet(const char* _ENDPOINT,const char* _API_KEY="")
+String appGet(const char* _ENDPOINT,const char* _API_KEY)
 {
   HTTPClient https; // declare http object
 
