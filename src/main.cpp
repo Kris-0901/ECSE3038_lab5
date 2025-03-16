@@ -18,7 +18,7 @@ void setup(){
 
   u8g2.begin();  // Initialize the display
   u8g2.clear();  // clear the display
-  splashScreen();
+  splashScreen();//OLED default startup screen 
 
   if (IS_WOKWI) 
     WiFi.begin(SSID, PASS, CHANNEL);
@@ -49,7 +49,26 @@ void setup(){
 
 void loop(){
   if ( WiFi.status() == WL_CONNECTED) {
-    HTTPClient http;
+    HTTPClient https;
+
+    https.begin(ENDPOINT);
+    https.addHeader("api-key", API_KEY);
+
+    int responseCode=https.GET();
+
+    if (responseCode<=0){
+      Serial.print("An error occured with repsonse code:");
+      Serial.println(responseCode);
+      https.end();
+      return;
+    }
+
+    Serial.print("Status Code: ");
+    Serial.println(responseCode);
+
+    String response= https.getString();
+    Serial.println(response);
+    https.end();
 
   }
 }
