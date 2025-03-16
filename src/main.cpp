@@ -11,13 +11,15 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0); // setup for OLED display
 
 uint16_t messageIcon = 0x00EC; /*messageIcon (u8g2_font_streamline_all_t)*/
 uint16_t wifiIcon = 0x01FD; /*wifiIcon (u8g2_font_streamline_all_t)*/
+const char* message1;
+const char* message2;
 
 //function prototypes
 void splashScreen(); //OLED default startup screen
 void wifiSuccessScreen(); // indicate when connected to wifi
 String appGet(const char* _ENDPOINT,const char* API_KEY);//get request body as char*
 const char* parseJSON (String _message, const char* _key); //convert request body to JSON.Parse selected line then return message 
-void printMessage(const char* _OLEDMessage); //print message to oled
+void printMessage(const char* _OLEDMessage1,const char* _OLEDMessage2); //print message to oled
 
 
 void setup(){
@@ -59,8 +61,10 @@ void loop(){
   if ( WiFi.status() == WL_CONNECTED) // check if connected to Wifi
   {
     String response_body = appGet(ENDPOINT,API_KEY); //get request body as string 
-    const char* message = parseJSON(response_body,"line_1");//convert request body to JSON.Parse line 1 then return message
-    printMessage(message);
+    message1 = parseJSON(response_body,"line_1");//convert request body to JSON.Parse line 1 then return message 
+    message2 = parseJSON(response_body,"line_2");//convert request body to JSON.Parse line 2 then return message
+    printMessage(message1,message2);// print messages  to OLED
+    
   }
 
 }
@@ -110,9 +114,13 @@ const char* parseJSON (String _message, const char* _key)  //convert request bod
   return _charMessage; 
 }
 
-void printMessage(const char* _OLEDMessage)
+void printMessage(const char* _OLEDMessage1, const char* _OLEDMessage2)
 {
   const char* _title = "Messages"; ///screen title
+  const char* _prefix = "[msg]"; ///message prefix
+
+  int _yPosition=30;// account for space occupied by title 
+ 
   u8g2.firstPage();
   do {
     int _pos1 = 0;
@@ -124,12 +132,17 @@ void printMessage(const char* _OLEDMessage)
     u8g2.drawStr(_centerStart, 13, _title); 
     u8g2.drawLine(0, 14, 128, 14);// line to separate title from messages
 
-
-
     u8g2.setFont(u8g2_font_6x13O_mf);// set font
-    int _charWidth = u8g2.getStrWidth("[msg]"); // get width of string header
-    u8g2.drawStr(0, 30, "[msg]");
-    u8g2.drawStr(_charWidth+2, 30, _OLEDMessage); // print message to oled in specified position 
+    int _charWidth = u8g2.getStrWidth(_prefix); // get width of string header
+
+    u8g2.drawStr(0, _yPosition, _prefix);
+    u8g2.drawStr(_charWidth+2, _yPosition, _OLEDMessage1); // print message to oled in specified position 
+
+    _yPosition=44;// account for space occupied by first message
+
+    u8g2.drawStr(0, _yPosition,_prefix);
+    u8g2.drawStr(_charWidth+2, _yPosition, _OLEDMessage2); // print message to oled in specified position 
+
   } while ( u8g2.nextPage() );
   return;
 }
