@@ -13,6 +13,8 @@ uint16_t messageIcon = 0x00EC; /*messageIcon (u8g2_font_streamline_all_t)*/
 uint16_t wifiIcon = 0x01FD; /*wifiIcon (u8g2_font_streamline_all_t)*/
 const char* message1;
 const char* message2;
+const char* previousMessage;
+String previousResponseBody;
 
 //function prototypes
 void splashScreen(); //OLED default startup screen
@@ -79,7 +81,7 @@ String appGet(const char* _ENDPOINT,const char* _API_KEY)
   int _responseCode=https.GET();// get the RestAPI status code
 
   if (_responseCode<=0){// check for errors 
-    const char* _ERROR = "ERROR";
+    String _ERROR = previousResponseBody;
     Serial.print("An error occured with repsonse code:");
     Serial.println(_responseCode);
     https.end();
@@ -90,6 +92,7 @@ String appGet(const char* _ENDPOINT,const char* _API_KEY)
   Serial.println(_responseCode);
 
   String _response_body= https.getString(); // ge the body of the get request
+  previousResponseBody=_response_body;
   Serial.println(_response_body); // print body of requuest
   https.end();// end the https connection 
 
@@ -103,13 +106,14 @@ const char* parseJSON (String _message, const char* _key)  //convert request bod
 
   if (error) // return errror if conversion fails 
   {
-    const char* _ERROR = "ERROR";
+    const char* _ERROR = previousMessage;
     Serial.print("Deserialization failed: ");
     Serial.println(error.c_str());
     return _ERROR;
   }
 
   const char* _charMessage = object[_key];
+  previousMessage =_charMessage;
 
   return _charMessage; 
 }
